@@ -1,4 +1,7 @@
+import pandas
+
 # functions go here
+
 
 # checks that user response is not blank
 def not_blank(question):
@@ -41,11 +44,12 @@ def calc_ticket_price(var_age):
     else:
         return 6.5
 
-# checks that users enter a vlid response (eg yes / no
+
+# checks that users enter a valid response (e.g. yes / no
 # cash / credit) based on a list of options
 def string_checker(question, num_letters, valid_responses):
 
-    error = "Please choose {} or {}".format(valid_responses[0],valid_responses[1])
+    error = "Please choose {} or {}".format(valid_responses[0], valid_responses[1])
 
     if num_letters == 1:
         short_version = 1
@@ -63,18 +67,33 @@ def string_checker(question, num_letters, valid_responses):
         print(error)
 
 
+def currency(x):
+    return "${:.2f}".format(x)
+
+
 # main routine starts here
 
 # set maximum number of tickets below
-max_tickets = 3
+max_tickets = 5
 tickets_sold = 0
 
-yes_no_list = ["yes","no"]
-payment_list = ["cash","credit"]
+yes_no_list = ["yes", "no"]
+payment_list = ["cash", "credit"]
+
+# Lists to hold ticket details
+all_names = []
+all_ticket_costs = []
+all_surcharge = []
+
+# Dictionary used to create data frame ie: column_name:list
+mini_movie_dict = {
+    "Name": all_names,
+    "Ticket Price": all_ticket_costs,
+    "Surcharge": all_surcharge
+}
 
 # Ask user if they want to see the instructions
-display_instructions = string_checker("Do you want to read the instructions (y/n): ",
-1,yes_no_list)
+display_instructions = string_checker("Do you want to read the instructions (y/n): ", 1, yes_no_list)
 
 if display_instructions == "yes":
     print("Instructions go here")
@@ -103,13 +122,54 @@ while tickets_sold < max_tickets:
     ticket_cost = calc_ticket_price(age)
 
     # get payment method
-    pay_method = string_checker("Choose a payment method (cash / credit): ",2,payment_list)
-    
+    pay_method = string_checker("Choose a payment method (cash / credit): ", 2, payment_list)
+
+    if pay_method == "cash":
+        surcharge = 0
+    else:
+        # Calculate 5% surcharge if users are paying by credit card
+        surcharge = ticket_cost * 0.05
+
     tickets_sold += 1
+
+    # Add ticket name, cost and surcharge to lists
+    all_names.append(name)
+    all_ticket_costs.append(ticket_cost)
+    all_surcharge.append(surcharge)
+
+# Create data frame from dictionary to organise information
+mini_movie_frame = pandas.DataFrame(mini_movie_dict)
+mini_movie_frame = mini_movie_frame.set_index("Name")
+
+# Calculate the total ticket cost (ticket + surcharge)
+mini_movie_frame["Total"] = mini_movie_frame["Surcharge"] + mini_movie_frame["Ticket Price"]
+
+# Calculate the profit for each ticket
+mini_movie_frame["Profit"] = mini_movie_frame["Ticket Price"] - 5
+
+# Calculate ticket and profit totals
+total = mini_movie_frame["Total"].sum()
+profit = mini_movie_frame["Profit"].sum()
+
+# Currency Formatting (uses currency function)
+add_dollars = ["Ticket Price", "Surcharge", "Total", "Profit"]
+for var_item in add_dollars:
+    mini_movie_frame[var_item] = mini_movie_frame[var_item].apply(currency)
+
+print("---- Ticket Data ----\n")
+
+# output table with ticket data
+print(mini_movie_frame)
+
+print("\n----- Ticket Cost / Profit -----")
+
+# output total ticket sales and profit
+print("Total Ticket Sales: ${:.2f}".format(total))
+print("Total Profit : ${:.2f}".format(profit))
 
 # Output number of tickets sold
 if tickets_sold == max_tickets:
-    print("Congratulations you have sold all the tickets")
+    print("\nCongratulations you have sold all the tickets")
 else:
     print("You have sold {} ticket/s. There is {} ticket/s remaining".format(
         tickets_sold, max_tickets - tickets_sold
