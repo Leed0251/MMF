@@ -59,15 +59,15 @@ def calc_ticket_price(var_age):
 
     # ticket is $7.50 for users under 16
     if var_age < 16:
-        return 7.5
+        return 7.50
 
     # ticket is $10.50 for users between 16 and 64
     elif var_age < 65:
-        return 10.5
+        return 10.50
 
     # ticket price is $6.5 for seniors (65+)
     else:
-        return 6.5
+        return 6.50
 
 
 # checks that users enter a valid response (e.g. yes / no
@@ -204,15 +204,15 @@ miniMovieString = pandas.DataFrame.to_string(miniMovieFrame)
 
 # Create strings for printing...
 ticketCostHeading = "\n----- Ticket Cost / Profit -----"
-totalTicketSales = "Total Ticket Sales: ${}".format(total)
-totalProfit = "Total Profit : ${}".format(profit)
+totalTicketSales = "Total Ticket Sales: ${:.2f}".format(total)
+totalProfit = "Total Profit : ${:.2f}".format(profit)
 
 # Edit text below!! It needs to work if we have unsold tickets
 salesStatus = "\n*** All the tickets have been sold ***"
 
 winnerHeading = "\n---- Raffle Winner ----"
 winnerText = "The winner of the raffle is {}. "\
-    "They have won ${}. ie: Their ticket is " \
+    "They have won ${:.2f}. ie: Their ticket is " \
     "free!".format(winnerName, totalWon)
 
 # list holding content to print / write to file
